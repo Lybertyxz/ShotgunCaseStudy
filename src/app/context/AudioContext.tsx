@@ -12,7 +12,7 @@ import { getLikes, likeTrack, unlikeTrack } from "@/lib/db";
 
 interface TrackContextType {
   currentTrack: Track | null;
-  setCurrentTrackByIndex: (index: number) => void;
+  setCurrentTrack: (track: Track) => void;
   playNextTrack: () => void;
   playPreviousTrack: () => void;
   allTracks: Track[];
@@ -26,10 +26,9 @@ const TrackContext = createContext<TrackContextType | undefined>(undefined);
 export function TrackProvider({ children }: { children: ReactNode }) {
   const [allTracks, setAllTracks] = useState<Track[]>([]);
   const [likedTracks, setLikedTracks] = useState<Track[]>([]);
-  const [currentIndex, setCurrentIndex] = useState<number | null>(null);
-  const userId = "user123"; // This should be replaced with a real user ID from session or context
+  const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
+  const userId = "user123";
 
-  // Load liked tracks initially
   useEffect(() => {
     const loadLikes = async () => {
       const likes = await getLikes(userId);
@@ -38,22 +37,24 @@ export function TrackProvider({ children }: { children: ReactNode }) {
     loadLikes();
   }, [userId]);
 
-  const setCurrentTrackByIndex = (index: number) => {
-    setCurrentIndex(index);
-  };
-
   const playNextTrack = () => {
-    if (currentIndex !== null) {
+    if (currentTrack && allTracks.length > 0) {
+      const currentIndex = allTracks.findIndex(
+        (track) => track.id === currentTrack.id
+      );
       const nextIndex = (currentIndex + 1) % allTracks.length;
-      setCurrentIndex(nextIndex);
+      setCurrentTrack(allTracks[nextIndex]);
     }
   };
 
   const playPreviousTrack = () => {
-    if (currentIndex !== null) {
+    if (currentTrack && allTracks.length > 0) {
+      const currentIndex = allTracks.findIndex(
+        (track) => track.id === currentTrack.id
+      );
       const previousIndex =
         (currentIndex - 1 + allTracks.length) % allTracks.length;
-      setCurrentIndex(previousIndex);
+      setCurrentTrack(allTracks[previousIndex]);
     }
   };
 
@@ -69,13 +70,11 @@ export function TrackProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const currentTrack = currentIndex !== null ? allTracks[currentIndex] : null;
-
   return (
     <TrackContext.Provider
       value={{
         currentTrack,
-        setCurrentTrackByIndex,
+        setCurrentTrack,
         playNextTrack,
         playPreviousTrack,
         allTracks,

@@ -1,4 +1,5 @@
 "use client";
+
 import Image from "next/image";
 import { Track } from "@/types";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
@@ -10,7 +11,7 @@ interface TrackListProps {
 }
 
 export default function TrackList({ tracks }: TrackListProps) {
-  const { setCurrentTrackByIndex, setAllTracks, likedTracks, toggleLikeTrack } =
+  const { setCurrentTrack, setAllTracks, likedTracks, toggleLikeTrack } =
     useTrack();
 
   useEffect(() => {
@@ -22,7 +23,7 @@ export default function TrackList({ tracks }: TrackListProps) {
   };
 
   return (
-    <div className="w-full bg-black/70 shadow-md p-6">
+    <div className="w-full bg-black/70 p-6 shadow-md">
       <table className="w-full table-auto">
         <thead>
           <tr className="text-left text-sm text-gray-300 border-b border-gray-500">
@@ -37,16 +38,16 @@ export default function TrackList({ tracks }: TrackListProps) {
             <tr key={track.id} className="cursor-pointer hover:bg-gray-800">
               <td
                 className="p-2 text-gray-200"
-                onClick={() => setCurrentTrackByIndex(index)}
+                onClick={() => setCurrentTrack(track)}
               >
                 {index + 1}
               </td>
               <td
                 className="flex items-center p-2"
-                onClick={() => setCurrentTrackByIndex(index)}
+                onClick={() => setCurrentTrack(track)}
               >
                 <Image
-                  src={track.image_url || "/fallback-image.jpg"}
+                  src={track.image_url || "/track.png"}
                   alt={track.name}
                   width={50}
                   height={50}
@@ -61,7 +62,7 @@ export default function TrackList({ tracks }: TrackListProps) {
               </td>
               <td
                 className="p-2 text-gray-200"
-                onClick={() => setCurrentTrackByIndex(index)}
+                onClick={() => setCurrentTrack(track)}
               >
                 {Math.floor(track.duration_ms / 60000)}:
                 {((track.duration_ms % 60000) / 1000)

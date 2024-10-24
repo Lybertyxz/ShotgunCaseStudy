@@ -18,7 +18,7 @@ export default async function LikesPage() {
         subinfo={`${likedTracks.length} Songs`}
       />
 
-      <section className="p-6 bg-gradient-to-b from-transparent via-black/70 to-black/90 min-h-[calc(100vh-18rem)]">
+      <section className="bg-gradient-to-b from-transparent via-black/70 to-black/90 min-h-[calc(100vh-18rem)]">
         {likedTracks.length > 0 ? (
           <TrackList tracks={likedTracks} />
         ) : (
