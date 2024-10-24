@@ -1,7 +1,8 @@
 "use client";
-
-import { Track } from "@/types";
 import Image from "next/image";
+import { Track } from "@/types";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { useEffect } from "react";
 import { useTrack } from "../context/AudioContext";
 
 interface TrackListProps {
@@ -9,33 +10,80 @@ interface TrackListProps {
 }
 
 export default function TrackList({ tracks }: TrackListProps) {
-  const { setCurrentTrack } = useTrack();
+  const { setCurrentTrackByIndex, setAllTracks, likedTracks, toggleLikeTrack } =
+    useTrack();
 
-  const handleTrackClick = (track: Track) => {
-    setCurrentTrack(track);
+  useEffect(() => {
+    setAllTracks(tracks);
+  }, [tracks, setAllTracks]);
+
+  const isLiked = (trackId: string) => {
+    return likedTracks.some((track) => track.id === trackId);
   };
 
   return (
-    <ul>
-      {tracks.map((track) => (
-        <li
-          key={track.id}
-          className="flex items-center mb-4 cursor-pointer"
-          onClick={() => handleTrackClick(track)}
-        >
-          <Image
-            src={track.image_url || "/track.png"}
-            alt={track.name}
-            className="w-16 h-16 mr-4"
-            width={64}
-            height={64}
-          />
-          <div>
-            <p className="font-semibold">{track.name}</p>
-            <p className="text-sm">{track.artists.join(", ")}</p>{" "}
-          </div>
-        </li>
-      ))}
-    </ul>
+    <div className="w-full bg-black/70 shadow-md p-6">
+      <table className="w-full table-auto">
+        <thead>
+          <tr className="text-left text-sm text-gray-300 border-b border-gray-500">
+            <th className="p-2">#</th>
+            <th className="p-2">Title</th>
+            <th className="p-2">Duration</th>
+            <th className="p-2">Like</th>
+          </tr>
+        </thead>
+        <tbody>
+          {tracks.map((track, index) => (
+            <tr key={track.id} className="cursor-pointer hover:bg-gray-800">
+              <td
+                className="p-2 text-gray-200"
+                onClick={() => setCurrentTrackByIndex(index)}
+              >
+                {index + 1}
+              </td>
+              <td
+                className="flex items-center p-2"
+                onClick={() => setCurrentTrackByIndex(index)}
+              >
+                <Image
+                  src={track.image_url || "/fallback-image.jpg"}
+                  alt={track.name}
+                  width={50}
+                  height={50}
+                  className="mr-4 rounded-sm"
+                />
+                <div>
+                  <p className="text-white">{track.name}</p>
+                  <p className="text-sm text-gray-400">
+                    {track.artists.join(", ")}
+                  </p>
+                </div>
+              </td>
+              <td
+                className="p-2 text-gray-200"
+                onClick={() => setCurrentTrackByIndex(index)}
+              >
+                {Math.floor(track.duration_ms / 60000)}:
+                {((track.duration_ms % 60000) / 1000)
+                  .toFixed(0)
+                  .padStart(2, "0")}
+              </td>
+              <td className="p-2 text-gray-200">
+                <button
+                  onClick={() => toggleLikeTrack(track)}
+                  className="text-2xl"
+                >
+                  {isLiked(track.id) ? (
+                    <FaHeart className="text-red-500" />
+                  ) : (
+                    <FaRegHeart className="text-gray-400 hover:text-red-500" />
+                  )}
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }

@@ -1,5 +1,4 @@
-// src/app/components/TrackItem.tsx
-"use client"; // Must be added to the top of the file to mark this as a client component
+"use client";
 
 import React from "react";
 
